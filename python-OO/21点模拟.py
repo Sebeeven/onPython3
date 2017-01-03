@@ -29,7 +29,7 @@ class Suit:
 
 # ♠ ♥ ♦ ♣
 # u'\U00002660',u'\U00002665',u'\U00002666',u'\U00002663'
-Club, Diamond, Heart, Spade = Suit('Spade',u'\U00002660'), Suit('Diamond', u'\U00002666'), Suit('Heart', u'\U00002665'), Suit('Club', u'\U00002663')
+Spade, Diamond, Heart, Club = Suit('Spade',u'\U00002660'), Suit('Diamond', u'\U00002666'), Suit('Heart', u'\U00002665'), Suit('Club', u'\U00002663')
 
 
 def Card(rank, suit):

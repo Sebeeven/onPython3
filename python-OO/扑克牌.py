@@ -25,7 +25,7 @@ class Suit:
         self.symbol = symbol
 # ♠ ♥ ♦ ♣
 # u'\U00002660',u'\U00002665',u'\U00002666',u'\U00002663'
-Club, Diamond, Heart, Spade = Suit('Spade',u'\U00002660'), Suit('Diamond', u'\U00002666'), Suit('Heart', u'\U00002665'), Suit('Club', u'\U00002663')
+Spade, Diamond, Heart, Club = Suit('Spade',u'\U00002660'), Suit('Diamond', u'\U00002666'), Suit('Heart', u'\U00002665'), Suit('Club', u'\U00002663')
 
 
 cards = [AceCard('A', Spade), NumberCard('2', Diamond), NumberCard('3', Heart)]
