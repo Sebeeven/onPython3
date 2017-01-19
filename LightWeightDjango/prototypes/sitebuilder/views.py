@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 from django.conf import settings
 from django.http import Http404
@@ -40,6 +41,7 @@ def page(request, slug='index'):
 	if page._meta is not None:
 		meta = page._meta.render(Context())
 		extra_context = json.loads(meta)
+		print('extra_context', extra_context)
 		context.update(extra_context)
 
 	return render(request, 'page.html', context)
