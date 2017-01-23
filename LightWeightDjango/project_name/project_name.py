@@ -10,15 +10,15 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '{{ secret_key }}') #os.urandom(32))
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 settings.configure(
-	DEBUG = DEBUG,
-	SECRET_KEY = SECRET_KEY,
-	ALLOWED_HOSTS = ALLOWED_HOSTS,
-	ROOT_URLCONF = __name__,
-	MIDDLEWARE_CLASSES = (
-		'django.middleware.common.CommonMiddleware',
-		'django.middleware.csrf.CsrfViewMiddleware',
-		'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	),
+    DEBUG = DEBUG,
+    SECRET_KEY = SECRET_KEY,
+    ALLOWED_HOSTS = ALLOWED_HOSTS,
+    ROOT_URLCONF = __name__,
+    MIDDLEWARE_CLASSES = (
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ),
 )
 ##################-- settings --#####################
 
@@ -28,7 +28,7 @@ settings.configure(
 from django.http import HttpResponse
 
 def index(request):
-	return HttpResponse('Hello World!!!')
+    return HttpResponse('Hello World!!!')
 ##################-- views --#####################
 
 
@@ -36,7 +36,7 @@ def index(request):
 ##################-- urls --#####################
 from django.conf.urls import url
 urlpatterns = (
-	url(r'^$', index),
+    url(r'^$', index),
 )
 ##################-- urls --#####################
 
@@ -50,7 +50,7 @@ application = get_wsgi_application()
 
 ##################-- manage --#####################
 if __name__ == '__main__':
-	from django.core.management import execute_from_command_line
+    from django.core.management import execute_from_command_line
 
-	execute_from_command_line(sys.argv)
+    execute_from_command_line(sys.argv)
 ##################-- manage --#####################
