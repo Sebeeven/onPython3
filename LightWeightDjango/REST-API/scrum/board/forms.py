@@ -24,9 +24,9 @@ class TaskFilter(django_filters.FilterSet):
             {'to_field_name': User.USERNAME_FIELD}
     	)
 
-    class SprintFilter(django_filters.FilterSet):
-    end_min = django_filters.DateFilter(name='end', lookup_type='gte') ##lookup_type ?? error! why??
-    end_max = django_filters.DateFilter(name='end', lookup_type='lte')
+class SprintFilter(django_filters.FilterSet):
+    end_min = django_filters.DateFilter(name='end', lookup_expr='gte')
+    end_max = django_filters.DateFilter(name='end', lookup_expr='lte')
 
     class Meta:
         model = Sprint

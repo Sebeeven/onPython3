@@ -25,8 +25,8 @@ class TaskFilter(django_filters.FilterSet):
         )
 
 class SprintFilter(django_filters.FilterSet):
-    end_min = django_filters.DateFilter(name='end', lookup_type='gte')
-    end_max = django_filters.DateFilter(name='end', lookup_type='lte')
+    end_min = django_filters.DateFilter(name='end', lookup_expr='gte')
+    end_max = django_filters.DateFilter(name='end', lookup_expr='lte')
 
     class Meta:
         model = Sprint
