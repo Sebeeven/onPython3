@@ -27,7 +27,7 @@ def get_page_or_404(name):
             meta = page.nodelist.pop(i)
             break
     page._meta = meta
-
+    # print(type(page._meta)) # type: BlockNode
     return page
 
 def page(request, slug='index'):
@@ -40,8 +40,12 @@ def page(request, slug='index'):
 
     if page._meta is not None:
         meta = page._meta.render(Context())
-        extra_context = json.loads(meta)
-        print('extra_context', extra_context)
+        # print('type of meta:', type(meta)) # type: SafeText
+        meta = json.dumps(meta)
+        # print('type of meta:', type(meta)) # type: SafeText2str
+        extra_context = eval(json.loads(meta)) # eval: str2dict
+        # print('extra_context', extra_context)
+        # print('type of extra_context', type(extra_context))
         context.update(extra_context)
 
     return render(request, 'page.html', context)

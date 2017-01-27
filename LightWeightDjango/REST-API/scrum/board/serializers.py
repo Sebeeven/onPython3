@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from board.models import Sprint, Task
 from datetime import date
+from django.utils.translation import ugettext_lazy as _
 
 User = get_user_model()
 
