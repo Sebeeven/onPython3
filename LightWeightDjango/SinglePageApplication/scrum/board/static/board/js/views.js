@@ -296,8 +296,6 @@
                 })
             };
 
-            this.socket = null;
-
             app.collections.ready.done(function () {
                 // self.sprint = app.sprints.push({id: self.sprintId});
                 // self.sprint.fetch({
@@ -308,9 +306,6 @@
                 app.tasks.on('add', self.addTask, self);
                 app.sprints.getOrFetch(self.sprintId).done(function (sprint) {
                     self.sprint = sprint;
-
-                    self.connectSocket();
-
                     self.render();
                     // add any current tasks
                     app.tasks.each(self.addTask, self);
@@ -360,18 +355,6 @@
             });
             view.render();
             return view;
-        },
-        connectSocket: function () {
-            var links = this.sprint && this.sprint.get('links');
-            if (links && links.channel) {
-                this.socket = new app.Socket(links.channel);
-            }
-        },
-        remove: function () {
-            TemplateView.prototype.remove.apply(this, arguments);
-            if (this.socket && this.socket.close) {
-                this.socket.close();
-            }
         }
     });
 

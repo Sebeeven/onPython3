@@ -34,11 +34,6 @@ class SprintSerializer(serializers.ModelSerializer):
         return {
             'self': reverse('sprint-detail', kwargs={'pk': obj.pk}, request=request),
             'task': reverse('task-list', request=request) + '?sprint={}'.format(obj.pk),
-            'channel': '{proto}://{server}/{channel}'.format(
-                proto = 'wss' if settings.WATERCOOLER_SECURE else 'ws',
-                server = settings.WATERCOOLER_SERVER,
-                channel = obj.pk
-            ),
         }
 
     def validate_end(self, value):
