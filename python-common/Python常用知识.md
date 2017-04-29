@@ -65,6 +65,51 @@ OUTPUT:
 Harry,Henry,Barkley
 ```
 
+### map/reduce/filter/lambda函数使用
+```python
+from functools import reduce
+
+def add(x):
+    return x + 100
+
+nums = [1, 2, 4, 5, 6, 11, 22, 33]
+
+print("----map----")
+print(list(map(add, nums)))
+
+print("----map None----")
+print(map(None, nums))
+
+def add2(x, y):
+    return x + y
+
+print("----reduce----")
+print(reduce(add2, nums))
+
+def is_odd(n):
+    return n % 2 == 1
+
+print("----filter----")
+print(list(filter(is_odd, nums)))
+
+print("----lambda----")
+print(list(map(lambda x: x*2, nums)))
+```
+
+```
+OUTPUT:
+----map----
+[101, 102, 104, 105, 106, 111, 122, 133]
+----map None----
+<map object at 0x11119dc50>
+----reduce----
+84
+----filter----
+[1, 5, 11, 33]
+----lambda----
+[2, 4, 8, 10, 12, 22, 44, 66]
+```
+
 ### 函数
 + 位置参数，如：
 
