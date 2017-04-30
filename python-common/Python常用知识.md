@@ -478,3 +478,280 @@ Found  4  matches
 
 ###关于操纵数据库
 #### 对于所有的关系型数据库，SQL是不完全相同的，且python的DB-API仅仅实现共有的那部分，每一种数据库实现的是包含自己特征和哲学的方言。而SQLAlchemy是其中一个著名的用于消除数据库之间差异的跨数据库的python库。
+
+
+### 新式类与经典类
+#### 在python3.x中，经典类写法与新式类写法都默认继承object类，即python3.x中默认都是新式类，可不必显式继承object类。而python 2.x中默认都是经典类，只有显式继承了object才是新式类。
+```python
+class CC: #经典类写法
+    def __init__(self):
+        pass
+
+class CCN(object): #新式类写法
+    def __init__(self):
+        pass
+    
+c1 = CC()
+c2 = CCN()
+```
+
+#### 比较实例对象的type和__class__，如果x是一个新式类的实例，那么type(x)和x.__class__是一样的结果。
+```python
+print(c1.__class__)
+print(type(c1))
+print(c2.__class__)
+print(type(c2))
+```
+```
+OUTPUT:
+<class '__main__.CC'>
+<class '__main__.CC'>
+<class '__main__.CCN'>
+<class '__main__.CCN'>
+```
+
+### 关于经典类与新式类的类继承写法及效果的差异
+```python
+# 经典类的继承
+class A:
+    def __init__(self):
+        print "enter A"
+        print "leave A"
+
+class B(A):
+    def __init__(self):
+        print "enter B"       
+        A.__init__(self)  # ** 这里是非绑定的类方法（用父类名A来调用）
+        print "leave B"
+    
+b = B()
+```
+#### 注意，非绑定的类方法，是用父类来调用并在参数列表中，引入待绑定的子类对象（self），从而达到调用父类方法的目的。但这样做的缺点是，当子类B的父类A发生变化时（如类B的父类由A变为C时），必须遍历整个类定义，把所有的通过非绑定的方法的类名全部替换过来。
+```python
+class B(C):    # A 变成 C，这里要改
+    def __init__(self):
+        print "enter B"
+        C.__init__(self)  # A 变成 C， 这里也要改
+        print "leave B"
+```
+
+```python
+# 新式类的继承(以下写法在python2x和python3x中都可以)
+class A(object):
+    def __init__(self):
+        print "enter A"  # python3x中，请改成 print("enter A")
+        print "leave A"
+
+class B(A):     # 即使B的父类由A变成C，只需要改这里。
+    def __init__(self):
+        print "enter B"
+        super(B, self).__init__() #这里使用了super()。
+        print "leave B"
+```
+
+### 关于类继承的顺序MRO
+#### 以下是反面例子，混合使用了非绑定的类方法和super()方法，出现了类A和类D的初始化函数被重复调用了2次的情况。
+```python
+class A(object):
+    def __init__(self):
+        print("enter A")
+        print("leave A")
+        
+class B(object):
+    def __init__(self):
+        print("enter B")
+        print("leave B")
+        
+class C(A):
+    def __init__(self):
+        print("enter C")
+        super(C, self).__init__()  # 这里使用了super()方法
+        print("leave C")
+        
+class D(A):
+    def __init__(self):
+        print("enter D")
+        super(D, self).__init__()  # 这里使用了super()方法
+        print("leave D")
+        
+class E(B, C):
+    def __init__(self):
+        print("enter E")
+        B.__init__(self)  # 这里使用了非绑定的类方法
+        C.__init__(self)  # 这里使用了非绑定的类方法
+        print("leave E")
+        
+class F(E, D):
+    def __init__(self):
+        print("enter F")
+        E.__init__(self)  # 这里使用了非绑定的类方法
+        D.__init__(self)  # 这里使用了非绑定的类方法
+        print("leave F")
+        
+f = F()
+```
+
+```
+OUTPUT:
+enter F
+enter E
+enter B
+leave B
+enter C
+enter D
+enter A
+leave A
+leave D
+leave C
+leave E
+enter D
+enter A
+leave A
+leave D
+leave F
+```
+
+#### 只使用super()方法
+```python
+class A(object):
+    def __init__(self):
+        print("enter A")
+        super(A, self).__init__()  # 增加super()
+        print("leave A")
+        
+class B(object):
+    def __init__(self):
+        print("enter B")
+        super(B, self).__init__()  # 增加super()
+        print("leave B")
+        
+class C(A):
+    def __init__(self):
+        print("enter C")
+        super(C, self).__init__()  # 不变
+        print("leave C")
+        
+class D(A):
+    def __init__(self):
+        print("enter D")
+        super(D, self).__init__()  # 不变
+        print("leave D")
+        
+class E(B, C):
+    def __init__(self):
+        print("enter E")
+        super(E, self).__init__()  # 这里删掉反例中使用的非绑定的类方法 B.__init__(self) 和 C.__init__(self) 改成super()方法
+        print("leave E")
+        
+class F(E, D):
+    def __init__(self):
+        print("enter F")
+        super(F, self).__init__()  # 这里删掉反例中使用的非绑定的类方法 E.__init__(self) 和 D.__init__(self) 改成super()方法
+        print("leave F")
+        
+f = F()
+print(f.__class__.__mro__)
+```
+
+```
+OUTPUT:
+enter F
+enter E
+enter B
+enter C
+enter D
+enter A
+leave A
+leave D
+leave C
+leave B
+leave E
+leave F
+(<class '__main__.F'>, <class '__main__.E'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.D'>, <class '__main__.A'>, <class 'object'>)
+```
+#### 初始化顺序为 F -> E -> B -> C -> D -> A -> object
+#### MRO拓扑图如下：
+```
+      object
+      /    \
+     /      A
+    /     /   \
+   B     C     D
+    \   /     /
+      E      /
+        \   /
+          F
+```
+#### 小结:
+1. Python的多继承类是通过mro的方式来保证各个父类的函数被逐一调用，而且保证每个父类函数只调用一次（如果每个类都使用super）；
+2. 混用super()和非绑定的函数是一个危险行为，这可能导致应该调用的父类函数没有调用或者一个父类函数被调用多次。
+3. super()是一个函数方法，只是返回的类型是一个类对象。
+
+### 剖析super()方法和MRO(Method Resolution Order)
+#### 虽然直接用非绑定的类方法（用父类名来调用）在使用单继承的时候没问题，但是如果使用多继承，将会涉及到查找顺序（MRO）、重复调用（钻石继承）等种种问题。super()是用来专门解决多重继承问题的。
+#### python中super()的定义如下
+```
+def super(cls, inst):
+    mro = inst.__class__.mro()
+    return mro[mro.index(cls) + 1]
+```
+#### 参数 cls 和 inst 分别做了两件事： 
+1. inst 即类对象实例，通过__class__.mro()方法生成 MRO 的列表。
+2. 通过 cls 定位当前 MRO 中的 index, 并返回 mro[index + 1]即下一个位置的类。
+
+#### 以上两件事就是 super() 的实质。
+#### 通过以上例子`f.__class__.__mro__`可打印出mro路径。
+#### 在 MRO 中，基类永远出现在派生类后面，如果有多个基类，基类的相对顺序保持不变。
+#### 注意：以上super()和MRO都是针对新式类的，如果不是新式类，只能老老实实用父类的类名去调用函数了。
+
+#### 对于有参数的情况，也是类似的，写法如下
+```python
+class A(object):
+    def __init__(self, strName, *args):
+        self.name = strName
+        super(A, self).__init__(*args)
+            
+class B(object):
+    def __init__(self, id):
+        self.id = id
+        
+class C(A, B):
+    def __init__(self, *args):
+        super(C, self).__init__(*args)
+```
+
+####  另外，如果没有复杂的继承结构，super 作用不大。而复杂的继承结构本身就是不良设计。对于多重继承的用法，现在比较推崇 Mixin 的方式，也就是:
+1. 普通类多重继承只能有一个普通父类和若干个 Mixin 类（保持主干单一）
+2. Mixin 类不能继承普通类（避免钻石继承）
+3. Mixin 类应该单一职责
+
+#### 如果按照上述标准，只使用 Mixin 形式的多继承，那么不会有钻石继承带来的重复方法调用，也不会有复杂的查找顺序 ，此时super()是可有可无的，用不用全看个人喜好。
+
+### 关于`__new__`, `__init__`, `__call__`
+1. `__new__(cls, *args, **kwargs)`  创建对象时调用，返回当前对象的一个实例，这里的第一个参数是`cls`即`class`本身。
+2. `__init__(self, *args, **kwargs)`  在创建完对象后调用，对当前对象实例的一些初始化，无返回值，即在调用`__new__`之后，根据返回的实例初始化，这里的第一个参数是`self`即对象本身。
+3. `__call__(self,  *args, **kwargs)`  如果类实现了这个方法，相当于把这个类的对象当作函数来使用，相当于 重载了括号`()`运算符。
+
+```python
+class A(object):
+    def __init__(self, *args, **kwargs):
+        print("init and self: ", self)
+        super(A, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        print("new and cls: ", cls)
+        return super(A, cls).__new__(cls, *args, **kwargs)
+    def __call__(self,  *args, **kwargs):
+        print("call and self: ", self)
+        
+aa = A()
+print("---------------")
+aa()
+```
+
+```
+OUTPUT:
+new and cls:  <class '__main__.A'>
+init and self:  <__main__.A object at 0x00000000045850B8>
+---------------
+call and self:  <__main__.A object at 0x00000000045850B8>
+```
